@@ -61,6 +61,47 @@ public class BinarySearchTree
         }
     }
     
+    //transplant replaces node u with node v such that node u's parent is node v's parent
+    // and node v is the child of node u's parent.
+    public void transplant(Node u, Node v)
+    {
+        if(u.parent == null)
+            root = v;
+        else if(u.parent.left == u)
+            u.parent.left = v;
+        else
+            u.parent.right = v;
+        if(v != null)
+            v.parent = u.parent;
+    }
+    
+    public void delete(int n)
+    {
+        Node p = find(n, root);
+        if(p.key != n)
+        {    
+            System.out.println("Element not found!");
+            return;
+        }
+        
+        if(p.left == null)
+            transplant(p, p.right);
+        else if(p.right == null)
+            transplant(p, p.left);
+        else
+        {
+            Node y = next(p.key);
+            if(y.parent != p)
+            {
+                transplant(y,y.right);
+                y.right = p.right;
+                y.right.parent = y;
+            }
+            transplant(p,y);
+            y.left = p.left;
+            y.left.parent = y;
+        }
+    }
     public void inOrder()
     {
         inOrderTraversal(root);
@@ -114,6 +155,8 @@ public class BinarySearchTree
              if(p.key >= x)
                  l.add(p.key);
              p = next(p.key);
+             if(p == null)
+                 break;
          }
          return l;
     }
@@ -132,14 +175,20 @@ public class BinarySearchTree
         
         tree.inOrder();
         
-        Node k = tree.next(80);
+        Node k = tree.next(50);
         if(k == null)
             System.out.println("Not Found");
         else
             System.out.println(k.key);
         
-        ArrayList<Integer> l = new ArrayList<Integer>(tree.rangeSearch(40, 50));
+        ArrayList<Integer> l = new ArrayList<Integer>(tree.rangeSearch(40, 1200));
         for(int i = 0; i < l.size(); i++)
-            System.out.println(l.get(i));
+            System.out.print(l.get(i) + " ");
+        System.out.println("");
+        
+        tree.delete(50);
+        tree.delete(20);
+        tree.delete(80);
+        tree.inOrder();
     }  
 }
